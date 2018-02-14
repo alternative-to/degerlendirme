@@ -56,14 +56,16 @@ if (isset ($kayitliogrencilistesi) AND (count($kayitliogrencilistesi) > 0)){
             echo "<td>".$ogrenci["ad"]."</td>";
             echo "<td>".$ogrenci['soyad']."</td>";
             if ($kayitliogrenci["onay"]) {
-              echo "&nbsp";
+              echo "<td>&nbsp</td>\r\n";
             } else {
-// ŞİMDİ BURAYA CHECKBOXLARI KOY EĞER ÖĞRENCİNİN ONAYI YOKSA....
+              echo "<td><input type='checkbox' name='onaylanacakogrenciler[]' value='".$ogrenci["kod"]."'></td>\r\n";
             }
             echo "</tr>\r\n";
         }
     }
     echo "</table>\r\n";
+    echo "<br /><input type='submit' value='Onayla' name='ogrencionay'>";
+    echo "</form>";
 } else {
     echo ("Henüz bu derse kayıt olmuş öğrenci yok! <br />");
 }

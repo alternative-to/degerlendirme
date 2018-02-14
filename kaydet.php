@@ -67,6 +67,24 @@ if (isset($_POST["ogrenciekle"])) {
     window.location.href='kisiselsayfa.php?aktifDersKod=".$aktifDersKod."&ogrenciListe=1';  </SCRIPT>");
 }
 
+/*              ÖĞRETMEN AKTİF DERSE KAYDEDİLEN ÖĞRENCİ ONAYI YAPIYORSA       */
+if (isset($_POST["ogrencionay"])) {
+  include 'ayar/vtbaglan.php';
+  $aktifDersKod = $_POST["aktifDersKod"];
+  if (isset($_POST["onaylanacakogrenciler"])){
+    $onaylanacakogrenciler = $_POST["onaylanacakogrenciler"];
+    foreach ($onaylanacakogrenciler as $onaylanacakogrenci) {
+        $sql = "INSERT INTO ogrencialinanders (ogrenciKod, aktifDersKod, onay) VALUES ('$onaylanacakogrenci','$aktifDersKod', 1)";
+        if (!($vt->query($sql))) {
+            echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Bir hata oluştu: $vt->error ve SQL: $sql !');  </SCRIPT>");
+        }
+    }
+  }
+  include 'ayar/vtkapat.php';
+  echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Öğrencilerin onay işlemi başarıyla yapıldı!')
+  window.location.href='kisiselsayfa.php?aktifDersKod=".$aktifDersKod."&ogrenciListe=1';  </SCRIPT>");
+}
+
                         /* ÖĞRETMEN AKTİF DERSE YENİ BİR PROJE İLAVE EDİYOR   */
 if (isset($_POST["projeolustur"])) {
 
