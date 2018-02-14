@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: 127.0.0.1:3306
--- Üretim Zamanı: 15 Oca 2018, 14:00:39
+-- Üretim Zamanı: 14 Şub 2018, 15:40:07
 -- Sunucu sürümü: 5.7.19
 -- PHP Sürümü: 7.0.23
 
@@ -21,6 +21,9 @@ SET time_zone = "+00:00";
 --
 -- Veritabanı: `degerlendirme`
 --
+DROP DATABASE IF EXISTS `degerlendirme`;
+CREATE DATABASE IF NOT EXISTS `degerlendirme` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `degerlendirme`;
 
 -- --------------------------------------------------------
 
@@ -30,13 +33,12 @@ SET time_zone = "+00:00";
 
 DROP TABLE IF EXISTS `akrandegerlendirme`;
 CREATE TABLE IF NOT EXISTS `akrandegerlendirme` (
-  `ogrenciNo` int(11) NOT NULL,
+  `ogrenciKod` int(11) NOT NULL,
   `ogrProjeKod` int(11) NOT NULL,
   `kriterKod` int(11) NOT NULL,
   `puan` int(11) NOT NULL,
-  PRIMARY KEY (`ogrenciNo`,`ogrProjeKod`,`kriterKod`),
+  PRIMARY KEY (`ogrenciKod`,`ogrProjeKod`,`kriterKod`),
   KEY `fk_ogrenci_has_ogrenciProjeleri_ogrenciProjeleri2_idx` (`ogrProjeKod`),
-  KEY `fk_ogrenci_has_ogrenciProjeleri_ogrenci2_idx` (`ogrenciNo`),
   KEY `fk_akrandegerlendirm_kriter1_idx` (`kriterKod`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -54,19 +56,37 @@ CREATE TABLE IF NOT EXISTS `aktifders` (
   `dersKod` int(11) NOT NULL,
   `grupno` int(11) NOT NULL,
   `etiket` varchar(255) NOT NULL,
+  `anahtar` varchar(10) NOT NULL,
+  `aktif` tinyint(1) NOT NULL DEFAULT '1',
   `aciklama` text,
   PRIMARY KEY (`kod`),
   KEY `fk_aktifders_donem1_idx` (`donemKod`),
   KEY `fk_aktifders_ders1_idx` (`dersKod`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 
 --
 -- Tablo döküm verisi `aktifders`
 --
 
-INSERT INTO `aktifders` (`kod`, `donemKod`, `yil`, `dersKod`, `grupno`, `etiket`, `aciklama`) VALUES
-(2, 2, 2018, 3, 1, 'Kontrol Grubu', NULL),
-(3, 2, 2018, 3, 2, 'Deney Grubu', NULL);
+INSERT INTO `aktifders` (`kod`, `donemKod`, `yil`, `dersKod`, `grupno`, `etiket`, `anahtar`, `aktif`, `aciklama`) VALUES
+(2, 2, 2018, 3, 1, 'Kontrol Grubu', '', 1, NULL),
+(3, 2, 2018, 3, 2, 'Deney Grubu', '', 1, NULL),
+(4, 1, 2018, 1, 1, 'Kontrol Grubu', '', 1, NULL),
+(5, 1, 2018, 1, 2, 'Deney Grubu', '', 1, NULL),
+(6, 1, 2017, 1, 1, 'Kontrol Grubu', '', 1, NULL),
+(7, 1, 2017, 1, 2, 'Deney Grubu', '', 1, NULL),
+(8, 2, 2018, 6, 1, 'Kontrol Grubu', '', 1, NULL),
+(9, 2, 2018, 6, 2, 'Deney Grubu', '', 1, NULL),
+(10, 2, 2018, 5, 1, 'Deneme', '123', 1, NULL),
+(11, 2, 2018, 5, 2, 'Deneme2', '123', 1, NULL),
+(12, 2, 2018, 2, 1, '10:30', '123', 1, NULL),
+(13, 2, 2018, 2, 2, '13:30', '1330', 1, NULL),
+(14, 2, 2017, 1, 1, 'Grup 1', '', 1, NULL),
+(15, 2, 2017, 1, 2, 'Grup 2', '', 1, NULL),
+(16, 2, 2018, 4, 1, 'test1', '', 1, NULL),
+(17, 2, 2018, 4, 2, 'test2', '', 1, NULL),
+(18, 1, 2016, 5, 1, 'Grup 1', 'abc', 1, NULL),
+(19, 1, 2016, 5, 2, 'Grup 2', 'abc', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -76,11 +96,10 @@ INSERT INTO `aktifders` (`kod`, `donemKod`, `yil`, `dersKod`, `grupno`, `etiket`
 
 DROP TABLE IF EXISTS `calismagrubu`;
 CREATE TABLE IF NOT EXISTS `calismagrubu` (
-  `ogrenciNo` int(11) NOT NULL,
+  `ogrenciKod` int(11) NOT NULL,
   `ogrProjeKod` int(11) NOT NULL,
-  PRIMARY KEY (`ogrenciNo`,`ogrProjeKod`),
-  KEY `fk_ogrenci_has_ogrenciProjeleri_ogrenciProjeleri1_idx` (`ogrProjeKod`),
-  KEY `fk_ogrenci_has_ogrenciProjeleri_ogrenci1_idx` (`ogrenciNo`)
+  PRIMARY KEY (`ogrenciKod`,`ogrProjeKod`),
+  KEY `fk_ogrenci_has_ogrenciProjeleri_ogrenciProjeleri1_idx` (`ogrProjeKod`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -139,23 +158,35 @@ INSERT INTO `donem` (`kod`, `etiket`) VALUES
 DROP TABLE IF EXISTS `kriter`;
 CREATE TABLE IF NOT EXISTS `kriter` (
   `kod` int(11) NOT NULL AUTO_INCREMENT,
-  `sirano` int(11) NOT NULL,
-  `kriterTuru` int(11) NOT NULL,
-  `maxPuan` int(11) NOT NULL,
-  `proje_kod` int(11) NOT NULL,
+  `etiket` varchar(255) NOT NULL,
+  `kriterTur` int(11) NOT NULL,
+  `azamiPuan` int(11) NOT NULL,
+  `projeKod` int(11) NOT NULL,
   PRIMARY KEY (`kod`),
-  KEY `fk_kriter_kriterTuru1_idx` (`kriterTuru`),
-  KEY `fk_kriter_proje1_idx` (`proje_kod`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  KEY `fk_kriter_kriterTuru1_idx` (`kriterTur`),
+  KEY `fk_kriter_proje1_idx` (`projeKod`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+--
+-- Tablo döküm verisi `kriter`
+--
+
+INSERT INTO `kriter` (`kod`, `etiket`, `kriterTur`, `azamiPuan`, `projeKod`) VALUES
+(1, '', 1, 3, 2),
+(2, 'kriter1711306', 1, 3, 2),
+(3, 'yok', 1, 3, 3),
+(4, 'yeni', 2, 5, 3),
+(5, 'deneme', 1, 3, 1),
+(6, 'teslim edildi', 2, 4, 8);
 
 -- --------------------------------------------------------
 
 --
--- Tablo için tablo yapısı `kriterturu`
+-- Tablo için tablo yapısı `kritertur`
 --
 
-DROP TABLE IF EXISTS `kriterturu`;
-CREATE TABLE IF NOT EXISTS `kriterturu` (
+DROP TABLE IF EXISTS `kritertur`;
+CREATE TABLE IF NOT EXISTS `kritertur` (
   `kod` int(11) NOT NULL AUTO_INCREMENT,
   `etiket` varchar(255) NOT NULL,
   `seviye` int(11) NOT NULL,
@@ -163,10 +194,10 @@ CREATE TABLE IF NOT EXISTS `kriterturu` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 --
--- Tablo döküm verisi `kriterturu`
+-- Tablo döküm verisi `kritertur`
 --
 
-INSERT INTO `kriterturu` (`kod`, `etiket`, `seviye`) VALUES
+INSERT INTO `kritertur` (`kod`, `etiket`, `seviye`) VALUES
 (1, 'Yok / Var', 2),
 (2, 'Hayır / Evet', 2),
 (3, 'Dereceli Kötü/Orta/İyi', 3);
@@ -179,24 +210,28 @@ INSERT INTO `kriterturu` (`kod`, `etiket`, `seviye`) VALUES
 
 DROP TABLE IF EXISTS `ogrenci`;
 CREATE TABLE IF NOT EXISTS `ogrenci` (
-  `numara` int(11) NOT NULL,
+  `kod` int(11) NOT NULL AUTO_INCREMENT,
+  `numara` int(11) DEFAULT NULL,
   `ad` varchar(255) NOT NULL,
   `soyad` varchar(255) NOT NULL,
   `kullaniciadi` varchar(255) NOT NULL,
   `sifre` char(40) NOT NULL,
   `eposta` varchar(255) NOT NULL,
   `ogretmen` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`numara`),
+  PRIMARY KEY (`kod`),
   UNIQUE KEY `kullaniciadi_UNIQUE` (`kullaniciadi`),
-  UNIQUE KEY `eposta_UNIQUE` (`eposta`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  UNIQUE KEY `eposta_UNIQUE` (`eposta`),
+  UNIQUE KEY `numara` (`numara`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 --
 -- Tablo döküm verisi `ogrenci`
 --
 
-INSERT INTO `ogrenci` (`numara`, `ad`, `soyad`, `kullaniciadi`, `sifre`, `eposta`, `ogretmen`) VALUES
-(123, 'aaa', 'vvv', '123', '40bd001563085fc35165329ea1ff5c5ecbdbbeef', 'afsat@afsat.com', 1);
+INSERT INTO `ogrenci` (`kod`, `numara`, `ad`, `soyad`, `kullaniciadi`, `sifre`, `eposta`, `ogretmen`) VALUES
+(1, 123, 'aaa', 'vvv', '123', '40bd001563085fc35165329ea1ff5c5ecbdbbeef', 'afsat@afsat.com', 1),
+(2, NULL, 'Ahmet', 'Satıcı', '124', 'f38cfe2e2facbcc742bad63f91ad55637300cb45', 'asatici@asatici.com', 0),
+(3, NULL, 'zubeyde', 'satıcı', 'zubeydeas', '612d9ec34bddce122042db4c143e86dca655bc15', 'zubeydeas@hotmail.com', 0);
 
 -- --------------------------------------------------------
 
@@ -206,12 +241,25 @@ INSERT INTO `ogrenci` (`numara`, `ad`, `soyad`, `kullaniciadi`, `sifre`, `eposta
 
 DROP TABLE IF EXISTS `ogrencialinanders`;
 CREATE TABLE IF NOT EXISTS `ogrencialinanders` (
-  `ogrNo` int(11) NOT NULL,
+  `ogrenciKod` int(11) NOT NULL,
   `aktifDersKod` int(11) NOT NULL,
-  PRIMARY KEY (`ogrNo`,`aktifDersKod`),
-  KEY `fk_ogrenci_has_aktifders_aktifders1_idx` (`aktifDersKod`),
-  KEY `fk_ogrenci_has_aktifders_ogrenci1_idx` (`ogrNo`)
+  `onay` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`ogrenciKod`,`aktifDersKod`),
+  KEY `fk_ogrenci_has_aktifders_aktifders1_idx` (`aktifDersKod`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Tablo döküm verisi `ogrencialinanders`
+--
+
+INSERT INTO `ogrencialinanders` (`ogrenciKod`, `aktifDersKod`, `onay`) VALUES
+(1, 16, 0),
+(2, 3, 0),
+(2, 5, 0),
+(2, 6, 0),
+(2, 8, 0),
+(2, 16, 0),
+(3, 16, 0);
 
 -- --------------------------------------------------------
 
@@ -244,7 +292,21 @@ CREATE TABLE IF NOT EXISTS `proje` (
   `aktifDersKod` int(11) NOT NULL,
   PRIMARY KEY (`kod`),
   KEY `fk_proje_aktifders1_idx` (`aktifDersKod`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+
+--
+-- Tablo döküm verisi `proje`
+--
+
+INSERT INTO `proje` (`kod`, `baslik`, `talimat`, `bitisTarihi`, `aktifDersKod`) VALUES
+(1, 'deneme', 'gemilerde talim var bahriyeli yariiim var', '2018-12-31', 5),
+(2, 'Proje 1711256', 'sadfasdf asdf asdf asdf ', '2018-12-31', 4),
+(3, 'deneme', 'bla bla', '2018-12-31', 8),
+(4, 'Proje622018', 'bla bla bla bla', '2018-12-30', 4),
+(5, 'yeni proje', 'ha ha ha ha ha ha ha ha ha', '2018-12-29', 4),
+(6, 'eski proje', 'ta ta ta ta ta ta ta ta ', '2018-12-28', 4),
+(7, 'yeni yeni çok yeni', 'sadfasdf sadfasdf', '1234-12-12', 12),
+(8, 'test', 'yok', '2018-12-28', 2);
 
 --
 -- Dökümü yapılmış tablolar için kısıtlamalar
@@ -254,8 +316,8 @@ CREATE TABLE IF NOT EXISTS `proje` (
 -- Tablo kısıtlamaları `akrandegerlendirme`
 --
 ALTER TABLE `akrandegerlendirme`
+  ADD CONSTRAINT `akrandegerlendirme_ibfk_1` FOREIGN KEY (`ogrenciKod`) REFERENCES `ogrenci` (`kod`),
   ADD CONSTRAINT `fk_akrandegerlendirm_kriter1` FOREIGN KEY (`kriterKod`) REFERENCES `kriter` (`kod`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_ogrenci_has_ogrenciProjeleri_ogrenci2` FOREIGN KEY (`ogrenciNo`) REFERENCES `ogrenci` (`numara`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_ogrenci_has_ogrenciProjeleri_ogrenciProjeleri2` FOREIGN KEY (`ogrProjeKod`) REFERENCES `ogrenciprojeleri` (`kod`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
@@ -269,22 +331,22 @@ ALTER TABLE `aktifders`
 -- Tablo kısıtlamaları `calismagrubu`
 --
 ALTER TABLE `calismagrubu`
-  ADD CONSTRAINT `fk_ogrenci_has_ogrenciProjeleri_ogrenci1` FOREIGN KEY (`ogrenciNo`) REFERENCES `ogrenci` (`numara`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `calismagrubu_ibfk_1` FOREIGN KEY (`ogrenciKod`) REFERENCES `ogrenci` (`kod`),
   ADD CONSTRAINT `fk_ogrenci_has_ogrenciProjeleri_ogrenciProjeleri1` FOREIGN KEY (`ogrProjeKod`) REFERENCES `ogrenciprojeleri` (`kod`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Tablo kısıtlamaları `kriter`
 --
 ALTER TABLE `kriter`
-  ADD CONSTRAINT `fk_kriter_kriterTuru1` FOREIGN KEY (`kriterTuru`) REFERENCES `kriterturu` (`kod`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_kriter_proje1` FOREIGN KEY (`proje_kod`) REFERENCES `proje` (`kod`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_kriter_kriterTuru1` FOREIGN KEY (`kriterTur`) REFERENCES `kritertur` (`kod`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_kriter_proje1` FOREIGN KEY (`projeKod`) REFERENCES `proje` (`kod`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Tablo kısıtlamaları `ogrencialinanders`
 --
 ALTER TABLE `ogrencialinanders`
   ADD CONSTRAINT `fk_ogrenci_has_aktifders_aktifders1` FOREIGN KEY (`aktifDersKod`) REFERENCES `aktifders` (`kod`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_ogrenci_has_aktifders_ogrenci1` FOREIGN KEY (`ogrNo`) REFERENCES `ogrenci` (`numara`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `ogrencialinanders_ibfk_1` FOREIGN KEY (`ogrenciKod`) REFERENCES `ogrenci` (`kod`);
 
 --
 -- Tablo kısıtlamaları `ogrenciprojeleri`
