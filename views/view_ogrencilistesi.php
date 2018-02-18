@@ -34,19 +34,12 @@ include 'ayar/vtkapat.php';
 /* ŞİMDİ DERSİN SEÇİLEN OTURUMUNA KAYIT OLAN ÖĞRENCİLERİ LİSTELEYELİM */
 
 echo "<h2>Dersi Alan Öğrenciler </h2>";
-/* ÖĞRETMENİN ÖĞRENCİ KAYDEDEBİLMESİ İÇİN FORM */
-echo "<form action='kayit.php' method='POST'>\r\n";
-echo "<input type='hidden' name='aktifDersKod' value='$aktifDersKod'>\r\n";
-echo "<p>Onaylamak istediğiniz öğrencileri seçiniz: </p>\r\n ";
-
-
 if (isset ($kayitliogrencilistesi) AND (count($kayitliogrencilistesi) > 0)){
     echo "<table border='1'>";
     echo "<tr>";
     echo "<td> <b>Numara</b> </td>";
     echo "<td> <b>Ad</b> </td>";
     echo "<td> <b>Soyad</b> </td>";
-    echo "<td> <b>Onayla</b> </td>";
     echo "</tr>\r\n";
     foreach ($ogrencilistesi as $ogrenci) {
         foreach ($kayitliogrencilistesi as $kayitliogrenci)
@@ -55,24 +48,16 @@ if (isset ($kayitliogrencilistesi) AND (count($kayitliogrencilistesi) > 0)){
             echo "<td>".$ogrenci["numara"]."</td>";
             echo "<td>".$ogrenci["ad"]."</td>";
             echo "<td>".$ogrenci['soyad']."</td>";
-            if ($kayitliogrenci["onay"]) {
-              echo "<td>&nbsp</td>\r\n";
-            } else {
-              echo "<td><input type='checkbox' name='onaylanacakogrenciler[]' value='".$ogrenci["kod"]."'></td>\r\n";
-            }
-            echo "</tr>\r\n";
         }
     }
     echo "</table>\r\n";
-    echo "<br /><input type='submit' value='Onayla' name='ogrencionay'>";
-    echo "</form>";
 } else {
     echo ("Henüz bu derse kayıt olmuş öğrenci yok! <br />");
 }
 
 echo "<h2> Öğrenci Kayıt </h2>";
 /* ÖĞRETMENİN ÖĞRENCİ KAYDEDEBİLMESİ İÇİN FORM */
-echo "<form action='kayit.php' method='POST'>\r\n";
+echo "<form action='kaydet.php' method='POST'>\r\n";
 echo "<input type='hidden' name='aktifDersKod' value='$aktifDersKod'>\r\n";
 echo "<p>Kayıtlamak istediğiniz öğrencileri seçiniz: </p>\r\n ";
 
