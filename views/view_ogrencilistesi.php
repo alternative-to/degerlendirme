@@ -30,6 +30,7 @@ if ($sonuc = $vt->query($sql)) {
     echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Bir hata oluştu: $vt->error ve SQL: $sql !') </SCRIPT>");
 }
 
+<<<<<<< HEAD
 /* ŞİMDİ DERSİN SEÇİLEN OTURUMUNA KAYITLI AMA ONAYSIZ OLAN ÖĞRENCİLERİ ALALIM */
 $sql = "SELECT * FROM ogrencialinanders WHERE aktifDersKod = $aktifDersKod AND onay = 0";
 echo $sql;
@@ -49,6 +50,10 @@ var_dump($onaysizogrencilistesi);
 
 if (isset ($onayliogrencilistesi) AND (count($onayliogrencilistesi) > 0)){
     echo "<h2>Dersi Alan Onaylı Öğrenciler </h2>";
+=======
+echo "<h2>Dersi Alan Öğrenciler </h2>";
+if (isset ($kayitliogrencilistesi) AND (count($kayitliogrencilistesi) > 0)){
+>>>>>>> refs/remotes/origin/master
     echo "<table border='1'>";
     echo "<tr>";
     echo "<td> <b>Numara</b> </td>";
@@ -62,6 +67,7 @@ if (isset ($onayliogrencilistesi) AND (count($onayliogrencilistesi) > 0)){
             echo "<td>".$ogrenci["numara"]."</td>";
             echo "<td>".$ogrenci["ad"]."</td>";
             echo "<td>".$ogrenci['soyad']."</td>";
+<<<<<<< HEAD
             echo "</tr>\r\n";
         }
     }
@@ -99,13 +105,23 @@ if (isset ($onaysizogrencilistesi) AND (count($onaysizogrencilistesi) > 0)){
   echo "</table>\r\n";
   echo "<br /><input type='submit' value='Onayla' name='ogrencionay'>";
   echo "</form>";
+=======
+        }
+    }
+    echo "</table>\r\n";
+>>>>>>> refs/remotes/origin/master
 } else {
     echo ("Henüz bu derse kayıt olmuş öğrenci yok! <br />");
 }
 
 /* ÖĞRETMENİN ÖĞRENCİ KAYDEDEBİLMESİ İÇİN FORM                                */
 echo "<h2> Öğrenci Kayıt </h2>";
+<<<<<<< HEAD
 echo "<form action='kayit.php' method='POST'>\r\n";
+=======
+/* ÖĞRETMENİN ÖĞRENCİ KAYDEDEBİLMESİ İÇİN FORM */
+echo "<form action='kaydet.php' method='POST'>\r\n";
+>>>>>>> refs/remotes/origin/master
 echo "<input type='hidden' name='aktifDersKod' value='$aktifDersKod'>\r\n";
 echo "<p>Kayıtlamak istediğiniz öğrencileri seçiniz: </p>\r\n ";
 

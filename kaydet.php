@@ -29,13 +29,11 @@ if  (isset($_POST["olustur"])){
     $donem = $_POST["donem"];
     $birgrupisim = $vt->real_escape_string($_POST["birgrupisim"]);
     $ikigrupisim = $vt->real_escape_string($_POST["ikigrupisim"]);
-    $birgrupanahtar = $vt->real_escape_string($_POST["birgrupanahtar"]);
-    $ikigrupanahtar = $vt->real_escape_string($_POST["ikigrupanahtar"]);
 
-    $sql = "INSERT INTO aktifders (donemkod, yil, derskod, grupno, etiket, anahtar) VALUES ('$donem','$yil', '$dersKod', '1', '$birgrupisim', '$birgrupanahtar')";
+    $sql = "INSERT INTO aktifders (donemkod, yil, derskod, grupno, etiket) VALUES ('$donem','$yil', '$dersKod', '1', '$birgrupisim')";
 
     if ($vt->query($sql)) {
-        $sql = "INSERT INTO aktifders (donemkod, yil, derskod, grupno, etiket, anahtar) VALUES ('$donem','$yil', '$dersKod', '2', '$ikigrupisim', '$ikigrupanahtar')";
+        $sql = "INSERT INTO aktifders (donemkod, yil, derskod, grupno, etiket) VALUES ('$donem','$yil', '$dersKod', '2', '$ikigrupisim')";
         if ($vt->query($sql)) {
             echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Ders oturumu başarıyla oluşturuldu!')
             window.location.href='kisiselsayfa.php?dersKod=$dersKod';  </SCRIPT>");
