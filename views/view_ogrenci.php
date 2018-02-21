@@ -35,6 +35,17 @@ if ($sonuc = $vt->query($sql)) {
     echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Bir hata oluştu: $vt->error ve SQL: $sql !') </SCRIPT>");
 }
 
+/* KRİTER TÜRLERİNİ ALALIM                */
+$sql = "SELECT * FROM kriterTur";
+
+if ($sonuc = $vt->query($sql)) {
+    while($satir = $sonuc->fetch_assoc()) {
+        $kriterTur[] = $satir;
+    }
+} else {
+    echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Bir hata oluştu: $vt->error ve SQL: $sql !') </SCRIPT>");
+}
+
 // ÖĞRENCİNİN ALDIĞI DERSLERİ LİSTEYE ALALIM
 
 $ogrKod = $_SESSION["kod"];
@@ -47,23 +58,63 @@ if ($sonuc = $vt->query($sql)) {
     echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Bir hata oluştu: $vt->error ve SQL: $sql !') </SCRIPT>");
 }
 
+// ÖĞRENCİNİN ALDIĞI DERSLERDEKİ PROJELERİ ALALIM...
+
+foreach ($ogrenciAlinanDersler as $ogrenciAlinanDers) {
+  $sql = "SELECT * FROM proje WHERE aktifDersKod = ".$ogrenciAlinanDers['aktifDersKod'];
+  if ($sonuc = $vt->query($sql)) {
+      while($satir = $sonuc->fetch_assoc()) {
+          $projeler[] = $satir;
+      }
+  } else {
+      echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Bir hata oluştu: $vt->error ve SQL: $sql !') </SCRIPT>");
+  }
+}
+//print_r($projeler);
+
+// ÖĞRENCİNİN ALDIĞI PROJELERİN KRİTERLERİNİ ALALIM...
+
+foreach ($projeler as $proje) {
+  $sql = "SELECT * FROM kriter WHERE projeKod = ".$proje['kod'];
+  if ($sonuc = $vt->query($sql)) {
+      while($satir = $sonuc->fetch_assoc()) {
+          $kriterler[] = $satir;
+      }
+  } else {
+      echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Bir hata oluştu: $vt->error ve SQL: $sql !') </SCRIPT>");
+  }
+}
+//print_r($kriterler);
+
 include 'ayar/vtkapat.php';
 //
-echo "<h2>Aldığının Dersler </h2>"; // ALDIĞI DERSLERİ LİSTELEYELİM
+echo "<h2>Aldığım Dersler </h2>"; // ALDIĞI DERSLERİ LİSTELEYELİM
 if (isset ($ogrenciAlinanDersler) AND (count($ogrenciAlinanDersler) > 0)){
-    echo "<table border='1'>\r\n";
     foreach ($ogrenciAlinanDersler as $ogrenciAlinanDers) {
         foreach ($aktifDersler as $aktifDers)
         if ($ogrenciAlinanDers["aktifDersKod"] == $aktifDers["kod"]) {
-            echo "<tr><td>";
+            //echo "<tr><td>";
+            echo "<h3>";
             echo $aktifDers["yil"]." yılı ";
             echo $donem[$aktifDers["donemKod"]-1]["etiket"];
             echo " dönemine ait ";
             echo $dersler[$aktifDers["dersKod"]-1]["ad"];
-            echo "</td></tr>\r\n";
+            echo "</h3>\r\n";
+            foreach ($projeler as $proje){// VARSA PROJE TABLOSUNU BAŞLATALIM
+               if ($proje["aktifDersKod"] == $aktifDers["kod"]){
+                 echo "<table border='1'>\r\n";
+                 echo "<tr><td><b>".$proje["baslik"]."</b></td></tr>\r\n";
+                 echo "<tr><td>Kriterleri Gör</td></tr>\r\n";
+                 echo "<tr><td>Grubum</td></tr>\r\n";
+                 echo "<tr><td>Yükle</td></tr>\r\n";
+                 echo "<tr><td>Notum: ??</td></tr>\r\n";
+                 echo "<tr><td>Grup Arkadaşlarımı Değerlendir</td></tr>\r\n";
+                 echo "<tr><td>Diğer Grupları Değerlendir <br /> (7 grubun 3 tanesi değerlendirildi.)</td></tr>\r\n";
+                 echo "</table>\r\n";
+               }
+            }
         }
     }
-    echo "</table>\r\n";
 } else {
     echo ("Henüz kaydolduğunuz ders yok! <br />");
 }
