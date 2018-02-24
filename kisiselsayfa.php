@@ -36,7 +36,12 @@ if (!$_SESSION["yetki"]) { /*GİRİŞ YAPMAMIŞSA */
     } else { /* ÖĞRENCİYSE */
       if (isset($_GET["ogrenciaktifderskayit"])) {
         include 'views/view_ogrenci_aktifderslistesi.php';
-      } else {
+      } elseif (isset($_GET["ogrencikritergor"]) AND (isset($_GET['projeKod']))) {
+                                                // ÖĞRENCİ PROJE KRİTERLERİNİ GÖRÜNTÜLEMEYİ SEÇTİYSE ...
+        include 'views/view_ogrenci_projekriterleri.php';
+      }
+      else {
+        echo "ıı";
         include 'views/view_ogrenci.php';
       }
     }

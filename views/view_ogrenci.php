@@ -104,13 +104,13 @@ if (isset ($ogrenciAlinanDersler) AND (count($ogrenciAlinanDersler) > 0)){
                if ($proje["aktifDersKod"] == $aktifDers["kod"]){
                  echo "<table border='1'>\r\n";
                  echo "<tr><td><b>".$proje["baslik"]."</b></td></tr>\r\n";
-                 echo "<tr><td>Kriterleri Gör</td></tr>\r\n";
+                 echo "<tr><td><a href='kisiselsayfa.php?ogrencikritergor=1&projeKod=".$proje['kod']."'>Kriterleri Gör</a></td></tr>\r\n";
                  echo "<tr><td>Grubum</td></tr>\r\n";
                  echo "<tr><td>Yükle</td></tr>\r\n";
                  echo "<tr><td>Notum: ??</td></tr>\r\n";
                  echo "<tr><td>Grup Arkadaşlarımı Değerlendir</td></tr>\r\n";
                  echo "<tr><td>Diğer Grupları Değerlendir <br /> (7 grubun 3 tanesi değerlendirildi.)</td></tr>\r\n";
-                 echo "</table>\r\n";
+                 echo "</table><br />\r\n";
                }
             }
         }
