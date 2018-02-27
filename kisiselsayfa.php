@@ -39,9 +39,10 @@ if (!$_SESSION["yetki"]) { /*GİRİŞ YAPMAMIŞSA */
       } elseif (isset($_GET["ogrencikritergor"]) AND (isset($_GET['projeKod']))) {
                                                 // ÖĞRENCİ PROJE KRİTERLERİNİ GÖRÜNTÜLEMEYİ SEÇTİYSE ...
         include 'views/view_ogrenci_projekriterleri.php';
-      }
+      } elseif (isset($_GET["ogrencikritergor"]) AND (isset($_GET['projeKod']))) {
+                                                // ÖĞRENCİ GRUP ARKADAŞLARINI GÖRÜNTÜLEMEYİ SEÇTİYSE ...
+        include 'views/view_ogrenci_projekriterleri.php';
       else {
-        echo "ıı";
         include 'views/view_ogrenci.php';
       }
     }
