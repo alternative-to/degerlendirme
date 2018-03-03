@@ -91,7 +91,13 @@ if (isset($_POST["projeolustur"])) {
     $baslik = $vt->real_escape_string($_POST["baslik"]);
     $tarih = $vt->real_escape_string($_POST["tarih"]);
     $talimat = $vt->real_escape_string($_POST["talimat"]);
-    $sql = "INSERT INTO proje (baslik, talimat, bitistarihi, aktifderskod) VALUES ('$baslik','$talimat', '$tarih', '$aktifDersKod')";
+    if (is_numeric($_POST["kisisayisi"])) {
+      $kisisayisi = $_POST["kisisayisi"];
+    } else {
+      $kisisayisi = 1;
+    }
+
+    $sql = "INSERT INTO proje (baslik, talimat, bitistarihi, aktifderskod, kisisayisi) VALUES ('$baslik','$talimat', '$tarih', '$aktifDersKod', '$kisisayisi')";
 
     if ($vt->query($sql)) {
         echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Proje başarıyla oluşturuldu!')

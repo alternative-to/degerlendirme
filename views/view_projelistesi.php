@@ -18,6 +18,7 @@ if ($sonuc = $vt->query($sql)) {
         echo "<tr>";
         echo "<td> Başlık </td>";
         echo "<td> Talimat </td>";
+        echo "<td> En Fazla </td>";
         echo "<td> Bitiş Tarihi </td>";
         echo "<td> Öğrenci Projeleri </td>";
         echo "<td> Kriterleri </td>";
@@ -26,6 +27,7 @@ if ($sonuc = $vt->query($sql)) {
             echo "<tr>";
             echo "<td>".$satir["baslik"]."</td>";
             echo "<td>".$satir["talimat"]."</td>";
+            echo "<td>".$satir["kisisayisi"]." kişi</td>";
             echo "<td>".$satir['bitisTarihi']."</td>";
             echo "<td><a href='kisiselsayfa.php?projeKod=".$satir["kod"]."&ogrenciProjeleri=1'>Detay</a></td>";
             echo "<td><a href='kisiselsayfa.php?projeKod=".$satir["kod"]."&kriter=1'>Liste</a></td>";
@@ -47,6 +49,8 @@ echo "<form action='kaydet.php' method='POST'>\r\n";
 echo "<input type='hidden' name='aktifDersKod' value='$aktifDersKod'>\r\n";
 echo "Projenin başlığını giriniz : ";
 echo "<input type='text' name='baslik' required><br />\r\n";
+echo "Projeyi en fazla kaç kişi yapabilir : ";
+echo "<input type='text' name='kisisayisi' required><br />\r\n";
 echo "Projenin teslim tarihini giriniz 2018-12-31 biçiminde: ";
 echo "<input type='text' name='tarih' required><br />\r\n";
 echo "<textarea name='talimat'></textarea><br />";

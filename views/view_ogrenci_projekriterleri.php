@@ -31,9 +31,6 @@ $_SESSION["yonlendirme"] = "projegoster";
 include 'views/view_yonlendirme.php';
 /* YÖNLENDİRME BİTİR */
 
-
-
-
 $sql = "SELECT * FROM kriterTur";
 if ($sonuc = $vt->query($sql)) {
     while($satir = $sonuc->fetch_assoc()) {

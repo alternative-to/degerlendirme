@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: 127.0.0.1:3306
--- Üretim Zamanı: 14 Şub 2018, 15:40:07
+-- Üretim Zamanı: 03 Mar 2018, 16:35:03
 -- Sunucu sürümü: 5.7.19
 -- PHP Sürümü: 7.0.23
 
@@ -56,7 +56,6 @@ CREATE TABLE IF NOT EXISTS `aktifders` (
   `dersKod` int(11) NOT NULL,
   `grupno` int(11) NOT NULL,
   `etiket` varchar(255) NOT NULL,
-  `anahtar` varchar(10) NOT NULL,
   `aktif` tinyint(1) NOT NULL DEFAULT '1',
   `aciklama` text,
   PRIMARY KEY (`kod`),
@@ -68,25 +67,25 @@ CREATE TABLE IF NOT EXISTS `aktifders` (
 -- Tablo döküm verisi `aktifders`
 --
 
-INSERT INTO `aktifders` (`kod`, `donemKod`, `yil`, `dersKod`, `grupno`, `etiket`, `anahtar`, `aktif`, `aciklama`) VALUES
-(2, 2, 2018, 3, 1, 'Kontrol Grubu', '', 1, NULL),
-(3, 2, 2018, 3, 2, 'Deney Grubu', '', 1, NULL),
-(4, 1, 2018, 1, 1, 'Kontrol Grubu', '', 1, NULL),
-(5, 1, 2018, 1, 2, 'Deney Grubu', '', 1, NULL),
-(6, 1, 2017, 1, 1, 'Kontrol Grubu', '', 1, NULL),
-(7, 1, 2017, 1, 2, 'Deney Grubu', '', 1, NULL),
-(8, 2, 2018, 6, 1, 'Kontrol Grubu', '', 1, NULL),
-(9, 2, 2018, 6, 2, 'Deney Grubu', '', 1, NULL),
-(10, 2, 2018, 5, 1, 'Deneme', '123', 1, NULL),
-(11, 2, 2018, 5, 2, 'Deneme2', '123', 1, NULL),
-(12, 2, 2018, 2, 1, '10:30', '123', 1, NULL),
-(13, 2, 2018, 2, 2, '13:30', '1330', 1, NULL),
-(14, 2, 2017, 1, 1, 'Grup 1', '', 1, NULL),
-(15, 2, 2017, 1, 2, 'Grup 2', '', 1, NULL),
-(16, 2, 2018, 4, 1, 'test1', '', 1, NULL),
-(17, 2, 2018, 4, 2, 'test2', '', 1, NULL),
-(18, 1, 2016, 5, 1, 'Grup 1', 'abc', 1, NULL),
-(19, 1, 2016, 5, 2, 'Grup 2', 'abc', 1, NULL);
+INSERT INTO `aktifders` (`kod`, `donemKod`, `yil`, `dersKod`, `grupno`, `etiket`, `aktif`, `aciklama`) VALUES
+(2, 2, 2018, 3, 1, 'Kontrol Grubu', 1, NULL),
+(3, 2, 2018, 3, 2, 'Deney Grubu', 1, NULL),
+(4, 1, 2018, 1, 1, 'Kontrol Grubu', 1, NULL),
+(5, 1, 2018, 1, 2, 'Deney Grubu', 1, NULL),
+(6, 1, 2017, 1, 1, 'Kontrol Grubu', 1, NULL),
+(7, 1, 2017, 1, 2, 'Deney Grubu', 1, NULL),
+(8, 2, 2018, 6, 1, 'Kontrol Grubu', 1, NULL),
+(9, 2, 2018, 6, 2, 'Deney Grubu', 1, NULL),
+(10, 2, 2018, 5, 1, 'Deneme', 1, NULL),
+(11, 2, 2018, 5, 2, 'Deneme2', 1, NULL),
+(12, 2, 2018, 2, 1, '10:30', 1, NULL),
+(13, 2, 2018, 2, 2, '13:30', 1, NULL),
+(14, 2, 2017, 1, 1, 'Grup 1', 1, NULL),
+(15, 2, 2017, 1, 2, 'Grup 2', 1, NULL),
+(16, 2, 2018, 4, 1, 'test1', 1, NULL),
+(17, 2, 2018, 4, 2, 'test2', 1, NULL),
+(18, 1, 2016, 5, 1, 'Grup 1', 1, NULL),
+(19, 1, 2016, 5, 2, 'Grup 2', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -96,10 +95,11 @@ INSERT INTO `aktifders` (`kod`, `donemKod`, `yil`, `dersKod`, `grupno`, `etiket`
 
 DROP TABLE IF EXISTS `calismagrubu`;
 CREATE TABLE IF NOT EXISTS `calismagrubu` (
-  `ogrenciKod` int(11) NOT NULL,
-  `ogrProjeKod` int(11) NOT NULL,
-  PRIMARY KEY (`ogrenciKod`,`ogrProjeKod`),
-  KEY `fk_ogrenci_has_ogrenciProjeleri_ogrenciProjeleri1_idx` (`ogrProjeKod`)
+  `kod` int(11) NOT NULL AUTO_INCREMENT,
+  `projeKod` int(11) NOT NULL,
+  `isim` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`kod`),
+  KEY `projeKod` (`projeKod`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -148,6 +148,21 @@ INSERT INTO `donem` (`kod`, `etiket`) VALUES
 (1, 'Güz'),
 (2, 'Bahar'),
 (3, 'Yaz');
+
+-- --------------------------------------------------------
+
+--
+-- Tablo için tablo yapısı `grupuye`
+--
+
+DROP TABLE IF EXISTS `grupuye`;
+CREATE TABLE IF NOT EXISTS `grupuye` (
+  `ogrenciKod` int(11) NOT NULL,
+  `grupKod` int(11) NOT NULL,
+  `onay` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`ogrenciKod`,`grupKod`),
+  KEY `grupKod` (`grupKod`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -253,6 +268,7 @@ CREATE TABLE IF NOT EXISTS `ogrencialinanders` (
 --
 
 INSERT INTO `ogrencialinanders` (`ogrenciKod`, `aktifDersKod`, `onay`) VALUES
+(1, 7, 1),
 (1, 16, 0),
 (2, 3, 0),
 (2, 5, 0),
@@ -290,6 +306,7 @@ CREATE TABLE IF NOT EXISTS `proje` (
   `talimat` text,
   `bitisTarihi` date DEFAULT NULL,
   `aktifDersKod` int(11) NOT NULL,
+  `kisisayisi` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`kod`),
   KEY `fk_proje_aktifders1_idx` (`aktifDersKod`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
@@ -298,15 +315,15 @@ CREATE TABLE IF NOT EXISTS `proje` (
 -- Tablo döküm verisi `proje`
 --
 
-INSERT INTO `proje` (`kod`, `baslik`, `talimat`, `bitisTarihi`, `aktifDersKod`) VALUES
-(1, 'deneme', 'gemilerde talim var bahriyeli yariiim var', '2018-12-31', 5),
-(2, 'Proje 1711256', 'sadfasdf asdf asdf asdf ', '2018-12-31', 4),
-(3, 'deneme', 'bla bla', '2018-12-31', 8),
-(4, 'Proje622018', 'bla bla bla bla', '2018-12-30', 4),
-(5, 'yeni proje', 'ha ha ha ha ha ha ha ha ha', '2018-12-29', 4),
-(6, 'eski proje', 'ta ta ta ta ta ta ta ta ', '2018-12-28', 4),
-(7, 'yeni yeni çok yeni', 'sadfasdf sadfasdf', '1234-12-12', 12),
-(8, 'test', 'yok', '2018-12-28', 2);
+INSERT INTO `proje` (`kod`, `baslik`, `talimat`, `bitisTarihi`, `aktifDersKod`, `kisisayisi`) VALUES
+(1, 'deneme', 'gemilerde talim var bahriyeli yariiim var', '2018-12-31', 5, 1),
+(2, 'Proje 1711256', 'sadfasdf asdf asdf asdf ', '2018-12-31', 4, 1),
+(3, 'deneme', 'bla bla', '2018-12-31', 8, 1),
+(4, 'Proje622018', 'bla bla bla bla', '2018-12-30', 4, 1),
+(5, 'yeni proje', 'ha ha ha ha ha ha ha ha ha', '2018-12-29', 4, 1),
+(6, 'eski proje', 'ta ta ta ta ta ta ta ta ', '2018-12-28', 4, 1),
+(7, 'yeni yeni çok yeni', 'sadfasdf sadfasdf', '1234-12-12', 12, 1),
+(8, 'test', 'yok', '2018-12-28', 2, 1);
 
 --
 -- Dökümü yapılmış tablolar için kısıtlamalar
@@ -331,8 +348,14 @@ ALTER TABLE `aktifders`
 -- Tablo kısıtlamaları `calismagrubu`
 --
 ALTER TABLE `calismagrubu`
-  ADD CONSTRAINT `calismagrubu_ibfk_1` FOREIGN KEY (`ogrenciKod`) REFERENCES `ogrenci` (`kod`),
-  ADD CONSTRAINT `fk_ogrenci_has_ogrenciProjeleri_ogrenciProjeleri1` FOREIGN KEY (`ogrProjeKod`) REFERENCES `ogrenciprojeleri` (`kod`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `calismagrubu_ibfk_1` FOREIGN KEY (`projeKod`) REFERENCES `proje` (`kod`);
+
+--
+-- Tablo kısıtlamaları `grupuye`
+--
+ALTER TABLE `grupuye`
+  ADD CONSTRAINT `grupuye_ibfk_1` FOREIGN KEY (`grupKod`) REFERENCES `calismagrubu` (`kod`),
+  ADD CONSTRAINT `grupuye_ibfk_2` FOREIGN KEY (`ogrenciKod`) REFERENCES `ogrenci` (`kod`);
 
 --
 -- Tablo kısıtlamaları `kriter`
