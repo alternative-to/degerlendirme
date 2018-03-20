@@ -147,6 +147,27 @@ if (isset($_POST["dersekaydol"])) {
   window.location.href='kisiselsayfa.php';  </SCRIPT>");
 }
 
+/* ÖĞRENCİ BİR ÇALIŞMA GRUBU OLUŞTURUYORSA                                    */
+if (isset($_POST["grupolustur"])) {
+include 'ayar/vtbaglan.php';
+$projeKod = $_POST["projeKod"];
+$isim = $_POST["isim"];
+$isim = $vt->real_escape_string($isim);
+$olusturan = $_SESSION["kod"];
+$sql = "INSERT INTO calismagrubu (projeKod, isim, olusturan) VALUES ('$projeKod','$isim', '$olusturan')";
+if (!($vt->query($sql))) {
+echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Bir hata oluştu: $vt->error ve SQL: $sql !');  </SCRIPT>");
+}
+$grupKod = $vt->insert_id;
+$sql = "INSERT INTO grupuye (ogrenciKod, grupKod, onay) VALUES ('$olusturan','$grupKod', 1)";
+if (!($vt->query($sql))) {
+echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Bir hata oluştu: $vt->error ve SQL: $sql !');  </SCRIPT>");
+}
+include 'ayar/vtkapat.php';
+echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Grubu oluşturdunuz, şimdi arkadaşlarınızı davet edebilirsiniz!')
+window.location.href='kisiselsayfa.php?grupgor=1&projeKod=".$projeKod."';  </SCRIPT>");
+}
+
               /*             HERHANGİ BİR FORMDAN GELMİYORSA                  */
 if (!isset($_POST)) {
     echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Formu doldurup tekrar deneyiniz!')

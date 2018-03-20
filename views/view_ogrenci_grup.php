@@ -1,18 +1,87 @@
 <?php
-echo "merhaba hoşgeldiniz, hadi problem çözmeye devam...";
-exit;
-$aktifDersKod = $_GET["aktifDersKod"];
-$_SESSION["aktifDersKod"] = $_GET["aktifDersKod"];
+echo "<b> POST </b><br />";
+print_r($_POST);
+echo "<br />";
+echo "<b> GET </b><br />";
+print_r($_GET);
+echo "<br />";
+echo "<b> SESSION </b><br />";
+print_r($_SESSION);
+echo "<br />";
+echo "Yapılacaklar: 1) Önce çalışma grubu oluştursunlar 2) Mevcut çalışma grupları listelensin 3) Çalışma gruplarındaki öğrenciler listelensin 4) Form üzerinden öğrenciler başkalarını davet edebilsin";
+echo "<br />";
+echo "<br />";
+$projeKod = $_GET["projeKod"];
+
+include 'ayar/vtbaglan.php';
+/* AKTİF DERS KODU BULALIM */
+$sql = "SELECT aktifDersKod FROM proje WHERE kod = $projeKod ";
+if ($sonuc = $vt->query($sql)) {
+  if($sonuc->num_rows > 0){
+    $satir = $sonuc->fetch_assoc();
+    $_SESSION["aktifDersKod"] = $satir["aktifDersKod"];
+  } else {
+    echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Hangi projeyi seçtiğiniz anlaşılamadı, tekrar deneyiniz!') window.location.href='kisiselsayfa.php';  </SCRIPT>");
+  }
+} else {
+    echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Bir hata oluştu: $vt->error ve SQL: $sql !') </SCRIPT>");
+}
+/* DERSKOD'U BULALIM */
+$sql = "SELECT dersKod FROM aktifders WHERE kod =". $_SESSION["aktifDersKod"];
+if ($sonuc = $vt->query($sql)) {
+  if($sonuc->num_rows > 0){
+    $satir = $sonuc->fetch_assoc();
+    $_SESSION["dersKod"] = $satir["dersKod"];
+  } else {
+    echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Hangi dersi seçtiğiniz anlaşılamadı, tekrar deneyiniz!') window.location.href='kisiselsayfa.php';  </SCRIPT>");
+  }
+} else {
+    echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Bir hata oluştu: $vt->error ve SQL: $sql !') </SCRIPT>");
+}
 
 /* YÖNLENDİRME BAŞLA */
 $_SESSION["yonlendirme"] = "ogrencilistegoster";
 include 'views/view_yonlendirme.php';
 /* YÖNLENDİRME BİTİR */
 
-/* ŞİMDİ TÜM ÖĞRENCİ BİLGİLERİNİ ALALIM */
-include 'ayar/vtbaglan.php';
-$sql = "SELECT kod, numara, ad, soyad FROM ogrenci";
+/* DAHA ÖNCE GRUP OLUŞTURMUŞ MU?                                              */
+$sql = "SELECT * FROM calismagrubu WHERE projeKod = $projeKod AND olusturan =".$_SESSION["kod"];
 
+if ($sonuc = $vt->query($sql)) {
+  if ($sonuc->num_rows){
+    $satir = $sonuc->fetch_assoc();
+    $grupKod = $satir["kod"];
+  }
+} else {
+    echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Bir hata oluştu: $vt->error ve SQL: $sql !') </SCRIPT>");
+}
+
+/* BÜTÜN ÇALIŞMA GRUPLARI                                              */
+$sql = "SELECT * FROM calismagrubu WHERE projeKod = $projeKod";
+
+if ($sonuc = $vt->query($sql)) {
+  if ($sonuc->num_rows>0 ){
+    while($satir = $sonuc->fetch_assoc()) {
+      $grupliste[]=$satir;
+    }
+  }
+} else {
+    echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Bir hata oluştu: $vt->error ve SQL: $sql !') </SCRIPT>");
+}
+//var_dump($grupliste);
+/*  KENDİ OLUŞTURDUĞU GRUP VE KATILIMCILARI GÖSTERELİM */
+if (isset($grupliste)) {
+  foreach ($grupliste as $grup) {
+    if ($grup["olusturan"] == $_SESSION["kod"]) {
+      echo "<p><b>Sizin Oluşturduğunu Grup: </b>\r\n ";
+      echo $grup['isim']." isimli ve ";
+      echo $grup['zaman']." 'da oluşturuldu.</p>";
+    }
+  }
+}
+
+/* ŞİMDİ DERSİN SEÇİLEN OTURUMUNA KAYITLI ÖĞRENCİLERİ ALALIM */
+$sql = "SELECT * FROM ogrencialinanders WHERE aktifDersKod = $aktifDersKod";
 if ($sonuc = $vt->query($sql)) {
     while($satir = $sonuc->fetch_assoc()) {
         $ogrencilistesi[] = $satir;
@@ -20,69 +89,47 @@ if ($sonuc = $vt->query($sql)) {
 } else {
     echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Bir hata oluştu: $vt->error ve SQL: $sql !') </SCRIPT>");
 }
-
-/* ŞİMDİ DERSİN SEÇİLEN OTURUMUNA KAYITLI VE ONAYLI ÖĞRENCİLERİ ALALIM */
-$sql = "SELECT * FROM ogrencialinanders WHERE aktifDersKod = $aktifDersKod AND onay = 1";
+/* DERSE KAYIT OLAN ÖĞRENCİLERİN DETAYLI BİLGİLERİNİ ELE ALALIM */
+$sql = "SELECT kod, numara, ad, soyad FROM ogrenci where kod in (SELECT ogrenciKod FROM ogrencialinanders WHERE aktifDersKod = $aktifDersKod)";
 
 if ($sonuc = $vt->query($sql)) {
     while($satir = $sonuc->fetch_assoc()) {
-        $onayliogrencilistesi[] = $satir;
+        $ogrencidetay[] = $satir;
     }
 } else {
     echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Bir hata oluştu: $vt->error ve SQL: $sql !') </SCRIPT>");
 }
 
-/* ŞİMDİ DERSİN SEÇİLEN OTURUMUNA KAYITLI AMA ONAYSIZ OLAN ÖĞRENCİLERİ ALALIM */
-$sql = "SELECT * FROM ogrencialinanders WHERE aktifDersKod = $aktifDersKod AND onay = 0";
-echo $sql;
+/*  VARSA ÖĞRENCİNİN OLUŞTURDUĞU GRUBA DAHİL OLMUŞ ÖĞRENCİLERİN (onaylı ve onaysız birlikte) LİSTESİNİ ALALIM */
+$sql = "SELECT * FROM grupuye WHERE grupKod = $grupKod";
 if ($sonuc = $vt->query($sql)) {
-  var_dump($sonuc);
     while($satir = $sonuc->fetch_assoc()) {
-        $onaysizogrencilistesi[] = $satir;
+        if ($satir["onay"]) {
+          $onayligrupuyeleri[] = $satir["ogrenciKod"];
+        } else {
+          $onaysizgrupuyeleri[] = $satir["ogrenciKod"];
+        }
     }
 } else {
     echo ("<SCRIPT LANGUAGE='JavaScript'> window.alert('Bir hata oluştu: $vt->error ve SQL: $sql !') </SCRIPT>");
 }
-
+echo "<pre>";
+var_dump($onayligrupuyeleri);
+echo "</pre>";
+echo "<pre>";
+var_dump($onaysizgrupuyeleri);
+echo "</pre>";
 include 'ayar/vtkapat.php';
-var_dump($onayliogrencilistesi);
-var_dump($onaysizogrencilistesi);
+
 /* ŞİMDİ DERSİN SEÇİLEN OTURUMUNA KAYIT OLAN VE ONAYLI ÖĞRENCİLERİ LİSTELEYELİM */
 
 
 echo "<h2>Dersi Alan Öğrenciler </h2>";
-if (isset ($kayitliogrencilistesi) AND (count($kayitliogrencilistesi) > 0)){
-
-    echo "<table border='1'>";
-    echo "<tr>";
-    echo "<td> <b>Numara</b> </td>";
-    echo "<td> <b>Ad</b> </td>";
-    echo "<td> <b>Soyad</b> </td>";
-    echo "</tr>\r\n";
-    foreach ($ogrencilistesi as $ogrenci) {
-        foreach ($onayliogrencilistesi as $onayliogrenci)
-        if ($onayliogrenci["ogrenciKod"] == $ogrenci["kod"]) {
-            echo "<tr>";
-            echo "<td>".$ogrenci["numara"]."</td>";
-            echo "<td>".$ogrenci["ad"]."</td>";
-            echo "<td>".$ogrenci['soyad']."</td>";
-
-            echo "</tr>\r\n";
-        }
-    }
-    echo "</table>\r\n";
-} else {
-    echo ("Henüz bu derse kayıtlı ve onaylı öğrenci yok! <br />");
-}
-
-/* ŞİMDİ DERSİN SEÇİLEN OTURUMUNA KAYIT OLAN VE ONAYLI ÖĞRENCİLERİ LİSTELEYELİM */
-
-if (isset ($onaysizogrencilistesi) AND (count($onaysizogrencilistesi) > 0)){
-  echo "<h2>Dersi Alan Onaylı Öğrenciler </h2>";
+if (isset ($ogrencidetay) AND (count($ogrencidetay) > 1)){
   /* ÖĞRETMENİN ÖĞRENCİ KAYDEDEBİLMESİ İÇİN FORM                                */
   echo "<form action='kaydet.php' method='POST'>\r\n";
   echo "<input type='hidden' name='aktifDersKod' value='$aktifDersKod'>\r\n";
-  echo "<p>Onaylamak istediğiniz öğrencileri seçiniz: </p>\r\n ";
+  echo "<p>Beraber çalışmak istediğiniz arkadaşınızı seçiniz: </p>\r\n ";
   echo "<table border='1'>";
   echo "<tr>";
   echo "<td> <b>Numara</b> </td>";
@@ -90,9 +137,8 @@ if (isset ($onaysizogrencilistesi) AND (count($onaysizogrencilistesi) > 0)){
   echo "<td> <b>Soyad</b> </td>";
   echo "<td> <b>Onayla</b> </td>";
   echo "</tr>\r\n";
-  foreach ($ogrencilistesi as $ogrenci) {
-      foreach ($onaysizogrencilistesi as $onaysizogrenci)
-      if ($onaysizogrenci["ogrenciKod"] == $ogrenci["kod"]) {
+  foreach ($ogrencidetay as $ogrenci) {
+      if ($ogrenci["kod"] <> $_SESSION["kod"]) {
           echo "<tr>";
           echo "<td>".$ogrenci["numara"]."</td>";
           echo "<td>".$ogrenci["ad"]."</td>";
@@ -107,52 +153,17 @@ if (isset ($onaysizogrencilistesi) AND (count($onaysizogrencilistesi) > 0)){
   echo "</table>\r\n";
 
 } else {
-    echo ("Henüz bu derse kayıt olmuş öğrenci yok! <br />");
+    echo ("Sizden başka bu derse kayıt olmuş öğrenci yok! <br />");
 }
 
-/* ÖĞRETMENİN ÖĞRENCİ KAYDEDEBİLMESİ İÇİN FORM                                */
-echo "<h2> Öğrenci Kayıt </h2>";
-echo "<form action='kaydet.php' method='POST'>\r\n";
-echo "<input type='hidden' name='aktifDersKod' value='$aktifDersKod'>\r\n";
-echo "<p>Kayıtlamak istediğiniz öğrencileri seçiniz: </p>\r\n ";
 
-if (isset ($ogrencilistesi) AND (count($ogrencilistesi) > 0)){
-    echo "<table border='1'>";
-    echo "<tr>";
-    echo "<td> <b>Seç</b> </td>";
-    echo "<td> <b>Numara</b> </td>";
-    echo "<td> <b>Ad</b> </td>";
-    echo "<td> <b>Soyad</b> </td>";
-    echo "</tr>\r\n";
-    if (isset($kayitliogrencilistesi)) {
-        foreach ($ogrencilistesi as $ogrenci) {
-            $bulundu = false;
-            foreach ($kayitliogrencilistesi as $kayitliogrenci){
-                if ($ogrenci["kod"] == $kayitliogrenci["ogrenciKod"]) $bulundu = true;
-            }
-            if (!$bulundu) {
-                echo "<tr>";
-                echo "<td> <input type='checkbox' name='kaydolacakogrenciler[]' value='".$ogrenci["kod"]."'>";
-                echo "<td>".$ogrenci["numara"]."</td>";
-                echo "<td>".$ogrenci["ad"]."</td>";
-                echo "<td>".$ogrenci['soyad']."</td>";
-                echo "</tr>\r\n";
-            }
-        }
-    } else {
-        foreach ($ogrencilistesi as $ogrenci) {
-            echo "<tr>";
-            echo "<td> <input type='checkbox' name='kaydolacakogrenciler[]' value='".$ogrenci["kod"]."'>";
-            echo "<td>".$ogrenci["numara"]."</td>";
-            echo "<td>".$ogrenci["ad"]."</td>";
-            echo "<td>".$ogrenci['soyad']."</td>";
-            echo "</tr>\r\n";
-        }
-    }
-    echo "</table>\r\n<br />";
-} else {
-    echo ("Henüz bu derse kayıt olmuş öğrenci yok! <br />");
+/* GRUP OLUŞTURMAK İÇİN FORM */
+if (!isset($grupKod)) { // Daha önce grup oluşturduysa bir daha bu formu görmesin...
+  echo "<br /><br />";
+  echo "<h2> Yeni Grup Oluştur </h2>";
+  echo "<form action='kaydet.php' method='POST'>";
+  echo "Grubun adını giriniz: <input type='text' name='isim'>";
+  echo "<input type='hidden' name='projeKod' value='".$projeKod."'>";
+  echo "<input type='submit' name='grupolustur' value='Oluştur!'>";
+  echo "</form>";
 }
-
-echo "<input type='submit' name='ogrenciekle' value='Kaydet!'>\r\n";
-echo "</form>";
